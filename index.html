@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <title>HTML Fullscreen API und Touch Events</title>
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+      <link rel="stylesheet" href="css/reveal.css">
+      <link rel="stylesheet" href="css/theme/beige.css" id="theme">
+      <!-- Code syntax highlighting -->
+      <link rel="stylesheet" href="lib/css/zenburn.css">
+      <!-- Printing and PDF exports -->
+      <script>
+         var link = document.createElement( 'link' );
+         link.rel = 'stylesheet';
+         link.type = 'text/css';
+         link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+         document.getElementsByTagName( 'head' )[0].appendChild( link );
+      </script>
+      <!--[if lt IE 9]>
+      <script src="lib/js/html5shiv.js"></script>
+      <![endif]-->
+   </head>
+    
+   <body onload="init()">
+      <div class="reveal">
+         <!-- Any section element inside of this container is displayed as a slide -->
+         <div class="slides">
+            <!-- ALL SLIDES GO HERE -->
+            <!-- Each section element contains an individual slide -->
+            <section>
+               <h1>HTML5</h1>
+               <h2>Fullscreen API und Touch Events</h2>
+               <p>von Jann Wickert</p>
+            </section>
+             
+            <section id="show-a-vid">
+               <section>
+                  <h1>Fullscreen</h1>
+                  <p>am Beispiel eines Videos</p>
+                  <video id="myvideo" preload="auto"  loop="" muted="" autoplay="autoplay">
+                     <source src="video.webm" type="video/webm">
+                  </video>
+                  <script>
+                     var videoElement = document.getElementById("myvideo");
+                     
+                     // click handler
+                     // Funktion, die aufgerufen wird, sobald auf das Element geklickt wird
+                     videoElement.onclick = function() {
+                         // Element bereits im Fullscreen?
+                         if(document.webkitFullscreenElement){
+                             //Fullscreen verlassen
+                             document.webkitExitFullscreen();
+                         }else{
+                             //Element in den Fullscreen bringen
+                           videoElement.webkitRequestFullscreen();   
+                         }
+                     }
+                  </script>
+               </section>
+                
+               <section>
+                  <h2>Javascript zum Fullscreen</h2>
+                  <pre><code clas="js">
+var videoElement = document.getElementById("myvideo");
+// click handler
+// Funktion, die aufgerufen wird, sobald auf das Element geklickt wird
+videoElement.onclick = function() {
+    // Element bereits im Fullscreen?
+    if(document.webkitFullscreenElement){
+        //Fullscreen verlassen
+        document.webkitExitFullscreen();
+    }else{
+        //Element in den Fullscreen bringen
+        videoElement.webkitRequestFullscreen();   
+    }
+}
+                       </code></pre>
+               </section>
+            </section>
+             
+            <section>
+               <h2>Fullscreen API Funktionen</h2>
+               <ul>
+                  <li><code>document.webkitFullscreenElement</code></li>
+                  <ul>
+                     <li>gibt das Element im Fullscreen oder nichts zurück</li>
+                  </ul>
+                  <li><code>elem.webkitRequestFullscreen();</code></li>
+                  <ul>
+                     <li>bringt das Element in <code>var elem</code> in den Fullscreen</li>
+                  </ul>
+                  <li><code>document.webkitExisFullscreen();</code></li>
+                  <ul>
+                     <li>verlässt den Fullscreen</li>
+                  </ul>
+               </ul>
+            </section>
+             
+            <section>
+               <section>
+                  <h1>Touch Events</h1>
+                  <p><a href="touch1.html">Klick mich!</a></p>
+               </section>
+                
+               <section>
+                  <h3>Canvas als "Malfeld"</h3>
+                  <pre><code><canvas id="mycanvas" width="500" height="500" style="border:1px solid #000000;">
+    Canvas element not supported.
+</canvas></code></pre>
+               </section>
+                
+               <section>
+                  <h3>Javascript für Touchfunktionen</h3>
+                  <pre><code>  var canvas;
+  var ctx;
+  var lastPoint=null;
+
+  function init() {
+    // Den "Malbereich" in einer Variable legen
+    var touchzone = document.getElementById("mycanvas");
+    // Die Events für's malen implementieren
+    touchzone.addEventListener("touchmove", draw, false);
+    touchzone.addEventListener("touchend", end, false);
+    // benötigt zum malen
+    ctx = touchzone.getContext("2d");
+  }
+
+  // wird ausgeführt sobald das touchmove-Event ausgelöst wird
+  function draw(e) {
+    e.preventDefault(); //verhindert das Standardmässige scrollen auf der gesamten Seite
+
+    if(lastPoint!=null) { //Logik zum malen. Irrelevant für Touch Events
+      ctx.beginPath();
+      ctx.moveTo(lastPoint.x, lastPoint.y);
+      ctx.lineTo(e.touches[0].pageX, e.touches[0].pageY);
+      ctx.stroke();
+    }
+    lastPoint = {x:e.touches[0].pageX, y:e.touches[0].pageY}; //setzt in lastpt die x- und y-Koordinate des Fingers (hier 0 als erster Finger --> nur single touch-Unterstützung)
+  }
+
+  // wird ausgelöst sobald der Finger wieder gehoben wird (touchend-Event)
+  function end(e) {
+    e.preventDefault();
+    // Terminate touch path
+    lastPoint=null;
+  }</code></pre>
+               </section>
+            </section>
+             
+            <section>
+               <h1>Die Touch Events API</h1>
+            </section>
+             
+            <section>
+               <h2>Grundlegendes</h2>
+               <p>Die API unterscheidet drei Interfaces</p>
+               <ul>
+                  <li>Touch</li>
+                  <li>TouchEvent</li>
+                  <li>TouchList</li>
+               </ul>
+            </section>
+             
+            <section>
+               <h2>Touch</h2>
+               <p>Jeder Touch (Berührung) beschreibt einen Berührungspunkt mit dem Display. Er enthält folgende Attribute:</p>
+               <ul>
+                  <li><code>identifier</code></li>
+                  <li><code>target</code></li>
+                  <li><code>screenX</code> und <code>screenY</code></li>
+                  <li><code>clientX</code> und <code>client></code></li>
+                  <li><code>pageX</code> und <code>pageY</code></li>
+               </ul>
+            </section>
+             
+            <section>
+               <section>
+                  <h2>TouchEvent</h2>
+                  <p>Das TouchEvent Interface definiert folgende Events</p>
+                  <ul>
+                     <li><code>touchstart</code></li>
+                     <li><code>touchmove</code></li>
+                     <li><code>touchend</code></li>
+                     <li><code>touchcancel</code></li>
+                  </ul>
+               </section>
+                
+               <section>
+                  <h2>TouchEvent Attribute</h2>
+                  <pre><code>interface TouchEvent : UIEvent {
+    readonly    attribute TouchList touches;
+    readonly    attribute TouchList targetTouches;
+    readonly    attribute TouchList changedTouches;
+    readonly    attribute boolean   altKey;
+    readonly    attribute boolean   metaKey;
+    readonly    attribute boolean   ctrlKey;
+    readonly    attribute boolean   shiftKey;
+    };</code></pre>
+               </section>
+            </section>
+             
+            <section>
+               <h2>TouchList</h2>
+               <p>Jedes Event hat drei Listen, die Touches auflisten</p>
+               <ul>
+                  <li>touches</li>
+                  <ul>
+                     <li>alle aktuellen Berührungen auf dem Bildschirm</li>
+                  </ul>
+                  <li>targetTouches</li>
+                  <ul>
+                     <li>alle Berührungen, die auf dem Zielelement des Events begonnen haben</li>
+                  </ul>
+                  <li>changedTouches</li>
+                  <ul>alle Berührungen, die in das aktuelle Event involviert sind</ul>
+               </ul>
+            </section>
+             
+            <section>
+               <h2>Quellen</h2>
+               <ul>
+                  <li><a href="http://www.sitepoint.com/use-html5-full-screen-api/">http://sitepoint.com/</a></li>
+                  <li><a href="http://www.w3.org/TR/touch-events/#touchlist-interface">http://w3.org/</a></li>
+                  <li><a href="https://mobiforge.com/design-development/html5-mobile-web-touch-events">MDN</a></li>
+               </ul>
+            </section>
+         </div>
+      </div>
+      <script src="lib/js/head.min.js"></script>
+      <script src="js/reveal.js"></script>
+      <script>
+         // Full list of configuration options available at:
+         // https://github.com/hakimel/reveal.js#configuration
+         Reveal.initialize({
+         	controls: true,
+         	progress: true,
+         	history: true,
+         	center: true,
+         
+         	transition: 'slide', // none/fade/slide/convex/concave/zoom
+         
+         	// Optional reveal.js plugins
+         	dependencies: [
+         		{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+         		{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+         		{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+         		{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+         		{ src: 'plugin/zoom-js/zoom.js', async: true },
+         		{ src: 'plugin/notes/notes.js', async: true }
+         	]
+         });
+         
+      </script>
+   </body>
+</html>

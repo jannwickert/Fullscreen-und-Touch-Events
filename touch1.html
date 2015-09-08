@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML5 Touch Beispiel </title>
+    <script>
+      var canvas;
+      var ctx;
+      var lastPoint=null;
+ 
+      function init() {
+        // Den "Malbereich" in einer Variable legen
+        var touchzone = document.getElementById("mycanvas");
+        // Die Events für's malen implementieren
+        touchzone.addEventListener("touchmove", draw, false);
+        touchzone.addEventListener("touchend", end, false);
+        // benötigt zum malen
+        ctx = touchzone.getContext("2d");
+      }
+ 
+      // wird ausgeführt sobald das touchmove-Event ausgelöst wird
+      function draw(e) {
+        e.preventDefault(); //verhindert das Standardmässige scrollen auf der gesamten Seite
+          
+        if(lastPoint!=null) { //Logik zum malen. Irrelevant für Touch Events
+          ctx.beginPath();
+          ctx.moveTo(lastPoint.x, lastPoint.y);
+          ctx.lineTo(e.touches[0].pageX, e.touches[0].pageY);
+          ctx.stroke();
+        }
+        lastPoint = {x:e.touches[0].pageX, y:e.touches[0].pageY}; //setzt in lastpt die x- und y-Koordinate des Fingers (hier 0 als erster Finger --> nur single touch-Unterstützung)
+      }
+ 
+      // wird ausgelöst sobald der Finger wieder gehoben wird (touchend-Event)
+      function end(e) {
+        e.preventDefault();
+        // Terminate touch path
+        lastPoint=null;
+      }
+    </script>
+  </head>
+  <body onload="init()">
+    <canvas id="mycanvas" width="500" height="500" style="border:1px solid #000000;">
+      Canvas element not supported.
+    </canvas>
+     <p><button type="button" onclick="window.location.href='index.html#/3'">Zurück!</button>
+         </p> 
+  </body>
+</html>
